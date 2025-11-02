@@ -1,0 +1,2107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CarbonCred - Gamified Carbon Reduction Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        .glass { 
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #6ee7b7 0%, #34d399 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .animate-in {
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        .stat-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        .tab-active {
+            background: rgba(52, 211, 153, 0.2);
+            color: #6ee7b7;
+            border-bottom: 3px solid #34d399;
+        }
+
+        .streak-badge {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        .eco-badge {
+            background: linear-gradient(135deg, #10b981 20%, #059669 100%);
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        .verified-badge {
+            background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+        }
+
+        .stat-card {
+            background: rgba(6, 95, 70, 0.5);
+            border: 1px solid rgba(110, 231, 183, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(6, 95, 70, 0.7);
+            border-color: rgba(110, 231, 183, 0.6);
+            transform: translateY(-5px);
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 95, 70, 0.4) 100%);
+            border: 2px solid rgba(110, 231, 183, 0.3);
+            border-radius: 2rem;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.6);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #34d399;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .nav-link:hover {
+            color: #6ee7b7;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .icon-glow {
+            filter: drop-shadow(0 0 10px rgba(110, 231, 183, 0.5));
+        }
+
+        .metric-number {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(110, 231, 183, 0.5);
+        }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #34d399 !important;
+            box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.2) !important;
+        }
+
+        .notification {
+            animation: slideInRight 0.5s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .trust-score-meter {
+            background: linear-gradient(90deg, #ef4444 0%, #f59e0b 33%, #10b981 100%);
+            border-radius: 9999px;
+            height: 10px;
+        }
+
+        .unverified {
+            opacity: 0.7;
+            border: 2px dashed rgba(251, 191, 36, 0.5);
+        }
+
+        .tab-content { 
+            display: none; 
+        }
+
+        .tab-content.active { 
+            display: block; 
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            transition: width 0.5s ease;
+        }
+
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(6, 95, 70, 0.2) 100%);
+            border: 2px solid rgba(110, 231, 183, 0.3);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .feed-post {
+            background: rgba(6, 95, 70, 0.3);
+            border: 1px solid rgba(110, 231, 183, 0.2);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .feed-post:hover {
+            background: rgba(6, 95, 70, 0.5);
+            border-color: rgba(110, 231, 183, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .family-member-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(110, 231, 183, 0.2);
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .family-member-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(110, 231, 183, 0.5);
+            transform: scale(1.05);
+        }
+
+        .impact-metric {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(6, 95, 70, 0.3);
+            border-radius: 1.5rem;
+            border: 1px solid rgba(110, 231, 183, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .impact-metric:hover {
+            background: rgba(6, 95, 70, 0.5);
+            border-color: rgba(110, 231, 183, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .tree-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid rgba(110, 231, 183, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            margin: 0 auto 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .tree-avatar:hover {
+            transform: scale(1.1);
+            background: rgba(16, 185, 129, 0.4);
+            border-color: rgba(110, 231, 183, 0.6);
+        }
+
+        @media (max-width: 768px) {
+            .metric-number { font-size: 2rem; }
+            .hero-card { border-radius: 1rem; }
+            .modal { width: 95%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Premium Navigation -->
+    <nav class="glass sticky top-0 z-50 backdrop-blur-lg border-b border-emerald-500/20">
+        <div class="max-w-7xl mx-auto px-6 py-5">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="text-4xl font-black gradient-text">🌱</div>
+                    <h1 class="text-3xl font-black gradient-text">CarbonCred</h1>
+                </div>
+                
+                <div class="hidden lg:flex gap-8 items-center">
+                    <a href="#" class="nav-link">Home</a>
+                    <a href="#" class="nav-link">Impact</a>
+                    <a href="#" class="nav-link">Community</a>
+                    <a href="#" class="nav-link">Leaderboard</a>
+                </div>
+
+                <div class="flex gap-4 items-center">
+                    <div class="glass px-4 py-2 rounded-xl flex items-center gap-2">
+                        <span>💎</span>
+                        <span class="font-bold text-emerald-300" id="navCredits">1,250</span>
+                    </div>
+                    <div class="glass px-4 py-2 rounded-xl flex items-center gap-2">
+                        <span>🔥</span>
+                        <span class="font-bold text-orange-300" id="navStreak">7</span>
+                    </div>
+                    <button id="profileBtn" class="btn-secondary px-6 py-2">
+                        👤 Profile
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Tab Navigation -->
+    <div class="glass sticky top-20 z-40 backdrop-blur-lg border-b border-emerald-500/20">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex gap-2 overflow-x-auto py-4 scrollbar-hide">
+                <button class="tab-btn px-6 py-2 font-bold rounded-lg transition whitespace-nowrap tab-active" data-tab="dashboard">
+                    📊 Dashboard
+                </button>
+                <button class="tab-btn px-6 py-2 font-bold rounded-lg transition whitespace-nowrap text-gray-300 hover:text-emerald-300" data-tab="feed">
+                    📱 Social Feed
+                </button>
+                <button class="tab-btn px-6 py-2 font-bold rounded-lg transition whitespace-nowrap text-gray-300 hover:text-emerald-300" data-tab="family">
+                    👨‍👩‍👧‍👦 Family
+                </button>
+                <button class="tab-btn px-6 py-2 font-bold rounded-lg transition whitespace-nowrap text-gray-300 hover:text-emerald-300" data-tab="impact">
+                    🌍 My Impact
+                </button>
+                <button class="tab-btn px-6 py-2 font-bold rounded-lg transition whitespace-nowrap text-gray-300 hover:text-emerald-300" data-tab="quests">
+                    🎯 Quests
+                </button>
+                <button class="tab-btn px-6 py-2 font-bold rounded-lg transition whitespace-nowrap text-gray-300 hover:text-emerald-300" data-tab="phone">
+                    📱 Phone Tracker
+                </button>
+                <button class="tab-btn px-6 py-2 font-bold rounded-lg transition whitespace-nowrap text-gray-300 hover:text-emerald-300" data-tab="analytics">
+                    📊 Analytics
+                </button>
+                <button class="tab-btn px-6 py-2 font-bold rounded-lg transition whitespace-nowrap text-gray-300 hover:text-emerald-300" data-tab="leaderboard">
+                    🏆 Leaderboard
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        
+        <!-- DASHBOARD TAB -->
+        <div id="dashboard" class="tab-content active animate-in">
+            <div class="mb-12">
+                <h2 class="text-5xl font-black mb-2 gradient-text">Welcome Back! 👋</h2>
+                <p class="text-emerald-200 text-lg">Keep reducing your carbon footprint & earn rewards</p>
+            </div>
+
+            <!-- Hero Stats Grid -->
+            <div class="grid md:grid-cols-5 gap-6 mb-12">
+                <div class="stat-card card-hover">
+                    <div class="text-5xl mb-3 icon-glow stat-pulse">💎</div>
+                    <div class="text-emerald-300" style="font-size: 0.75rem; opacity: 0.8;">CREDITS</div>
+                    <div class="metric-number text-3xl" id="dashCredits">1,250</div>
+                </div>
+
+                <div class="stat-card card-hover">
+                    <div class="text-5xl mb-3 icon-glow">🌳</div>
+                    <div class="text-emerald-300" style="font-size: 0.75rem; opacity: 0.8;">TREES</div>
+                    <div class="metric-number text-3xl" id="dashTrees">5</div>
+                </div>
+
+                <div class="stat-card card-hover">
+                    <div class="text-5xl mb-3 icon-glow">🔥</div>
+                    <div class="text-emerald-300" style="font-size: 0.75rem; opacity: 0.8;">STREAK</div>
+                    <div class="metric-number text-3xl" id="dashStreak">7</div>
+                </div>
+
+                <div class="stat-card card-hover">
+                    <div class="text-5xl mb-3 icon-glow">📉</div>
+                    <div class="text-emerald-300" style="font-size: 0.75rem; opacity: 0.8;">REDUCTION</div>
+                    <div class="metric-number text-3xl" id="dashReduction">35%</div>
+                </div>
+
+                <div class="stat-card card-hover">
+                    <div class="text-5xl mb-3 icon-glow">⚡</div>
+                    <div class="text-emerald-300" style="font-size: 0.75rem; opacity: 0.8;">COMPLETED</div>
+                    <div class="metric-number text-3xl" id="dashQuests">12</div>
+                </div>
+            </div>
+
+            <!-- Trust Score Hero Card -->
+            <div class="hero-card p-8 mb-12 card-hover">
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 class="text-4xl font-black mb-4">🛡️ Trust Score</h3>
+                        <p class="text-emerald-200 mb-6 text-lg">Your reputation across the CarbonCred ecosystem</p>
+                        <div class="flex items-end gap-4">
+                            <div>
+                                <div class="text-6xl font-black gradient-text" id="trustScoreText">75</div>
+                                <p class="text-emerald-200">/100</p>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-emerald-300 font-bold mb-2" id="trustLabel">Good Standing ✓</p>
+                                <div class="progress-bar">
+                                    <div id="trustScoreFill" class="progress-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative h-64 hidden md:block">
+                        <div class="absolute inset-0 rounded-2xl" style="background: conic-gradient(from 0deg, #10b981, #34d399, #6ee7b7, #10b981); opacity: 0.3; filter: blur(20px);"></div>
+                        <div class="absolute inset-4 glass rounded-2xl flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="text-6xl font-black mb-2">75%</div>
+                                <p class="text-emerald-200">Verified</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="glass p-8 rounded-2xl card-hover border border-emerald-500/30">
+                    <h4 class="text-2xl font-bold mb-4">🎯 Next Quest</h4>
+                    <p class="text-emerald-200 mb-4">Digital Detox Day - 24 hours without screen</p>
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-sm text-emerald-300">100 Credits</span>
+                        <span class="text-sm text-emerald-300">Hard</span>
+                    </div>
+                    <button class="btn-primary w-full py-3" onclick="switchTab('quests')">Start Quest →</button>
+                </div>
+
+                <div class="glass p-8 rounded-2xl card-hover border border-emerald-500/30">
+                    <h4 class="text-2xl font-bold mb-4">📱 Phone Reduction</h4>
+                    <p class="text-emerald-200 mb-4">Keep up your progress today</p>
+                    <div class="text-3xl font-bold gradient-text mb-4">3.2 / 5.0 hrs</div>
+                    <button class="btn-primary w-full py-3" onclick="switchTab('phone')">Log Session →</button>
+                </div>
+
+                <div class="glass p-8 rounded-2xl card-hover border border-emerald-500/30">
+                    <h4 class="text-2xl font-bold mb-4">👥 Invite Friends</h4>
+                    <p class="text-emerald-200 mb-4">Share your impact & earn bonuses</p>
+                    <div class="text-sm text-emerald-300 mb-4">3 friends invited • +150 credits</div>
+                    <button class="btn-primary w-full py-3">Share Link →</button>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="hero-card p-8">
+                <h3 class="text-3xl font-black mb-8">📜 Your Timeline</h3>
+                <div class="space-y-4" id="activityList"></div>
+            </div>
+        </div>
+
+        <!-- SOCIAL FEED TAB -->
+        <div id="feed" class="tab-content animate-in">
+            <div class="mb-12">
+                <h2 class="text-5xl font-black mb-2 gradient-text">Community Feed 📱</h2>
+                <p class="text-emerald-200 text-lg">See what others are doing & celebrate wins together</p>
+            </div>
+
+            <!-- Create Post -->
+            <div class="hero-card p-8 mb-8 card-hover">
+                <h4 class="text-xl font-bold mb-4">Share Your Achievement 🚀</h4>
+                <div class="space-y-4">
+                    <textarea id="postContent" class="w-full bg-black/30 text-white rounded-xl p-4 border border-emerald-500/30 focus:border-emerald-500 resize-none" 
+                              placeholder="Just completed a quest! 🌱 or Reduced phone usage by 50%! 📱" rows="3"></textarea>
+                    <div class="flex gap-4">
+                        <button class="btn-primary flex-1" onclick="createPost()">Post Achievement 🌟</button>
+                        <button class="btn-secondary px-6">Upload Photo 📸</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feed Filter -->
+            <div class="glass p-4 rounded-xl mb-8 flex gap-4 overflow-x-auto">
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap active:bg-emerald-500/50" onclick="filterFeed('all')">All Posts</button>
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="filterFeed('quests')">🎯 Quests</button>
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="filterFeed('phone')">📱 Phone Wins</button>
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="filterFeed('trees')">🌳 Trees Planted</button>
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="filterFeed('streaks')">🔥 Streaks</button>
+            </div>
+
+            <!-- Feed Posts -->
+            <div id="feedContainer" class="space-y-6"></div>
+        </div>
+
+        <!-- FAMILY TAB -->
+        <div id="family" class="tab-content animate-in">
+            <div class="mb-12">
+                <h2 class="text-5xl font-black mb-2 gradient-text">Family Circle 👨‍👩‍👧‍👦</h2>
+                <p class="text-emerald-200 text-lg">Compete & support family members together</p>
+            </div>
+
+            <!-- Invite Family -->
+            <div class="hero-card p-8 mb-12 card-hover">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-2xl font-bold mb-4">Invite Family Members</h4>
+                        <p class="text-emerald-200 mb-6">Create a family group & track everyone's progress</p>
+                        <div class="space-y-4">
+                            <input type="email" class="bg-black/30 text-white rounded-xl p-4 border border-emerald-500/30" placeholder="Enter email address">
+                            <select class="bg-black/30 text-white rounded-xl p-4 border border-emerald-500/30 w-full">
+                                <option>Select Relation</option>
+                                <option>Father</option>
+                                <option>Mother</option>
+                                <option>Brother</option>
+                                <option>Sister</option>
+                                <option>Spouse</option>
+                                <option>Child</option>
+                            </select>
+                            <button class="btn-primary w-full py-3">Send Invite 📨</button>
+                        </div>
+                    </div>
+                    <div class="bg-black/30 rounded-xl p-6 border border-emerald-500/30 flex flex-col justify-center">
+                        <p class="text-emerald-300 text-sm mb-2">Family Group Code</p>
+                        <div class="text-3xl font-black tracking-wider mb-4 select-all">FMLY-2025</div>
+                        <button class="btn-secondary py-2">Copy Code 📋</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Family Members -->
+            <h3 class="text-2xl font-bold mb-6">Your Family Team</h3>
+            <div class="grid md:grid-cols-4 gap-6" id="familyMembersContainer">
+                <!-- Family members will be rendered here -->
+            </div>
+
+            <!-- Family Stats -->
+            <div class="mt-12">
+                <h3 class="text-2xl font-bold mb-6">Family Statistics</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="hero-card p-8 card-hover">
+                        <p class="text-emerald-300 text-sm mb-2">Total Family Credits</p>
+                        <div class="metric-number text-4xl" id="familyTotalCredits">5,420</div>
+                        <p class="text-emerald-200 text-sm mt-4">Combined earnings</p>
+                    </div>
+                    <div class="hero-card p-8 card-hover">
+                        <p class="text-emerald-300 text-sm mb-2">Family Trees Planted</p>
+                        <div class="metric-number text-4xl" id="familyTotalTrees">18</div>
+                        <p class="text-emerald-200 text-sm mt-4">Environmental impact</p>
+                    </div>
+                    <div class="hero-card p-8 card-hover">
+                        <p class="text-emerald-300 text-sm mb-2">CO₂ Saved Together</p>
+                        <div class="metric-number text-4xl" id="familyTotalCO2">245</div>
+                        <p class="text-emerald-200 text-sm mt-4">kg in last month</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MY IMPACT TAB -->
+        <div id="impact" class="tab-content animate-in">
+            <div class="mb-12">
+                <h2 class="text-5xl font-black mb-2 gradient-text">Your Global Impact 🌍</h2>
+                <p class="text-emerald-200 text-lg">See the real-world difference you're making</p>
+            </div>
+
+            <!-- Impact Summary Hero -->
+            <div class="hero-card p-12 mb-12 card-hover">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div>
+                        <h3 class="text-3xl font-black mb-8">Your Carbon Journey</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-center gap-4">
+                                <div class="text-4xl">🚗</div>
+                                <div>
+                                    <p class="text-emerald-300 font-bold">Equivalent Car Miles Not Driven</p>
+                                    <p class="text-2xl font-black">342 miles</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-4xl">✈️</div>
+                                <div>
+                                    <p class="text-emerald-300 font-bold">CO₂ Equivalent Not Emitted</p>
+                                    <p class="text-2xl font-black">87.5 kg CO₂</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="text-4xl">🌳</div>
+                                <div>
+                                    <p class="text-emerald-300 font-bold">Trees Planted by You</p>
+                                    <p class="text-2xl font-black">5 Trees</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="glass p-6 rounded-2xl border border-emerald-500/30 text-center">
+                            <p class="text-5xl mb-2">🔋</p>
+                            <p class="text-emerald-300 text-sm mb-2">Energy Saved</p>
+                            <p class="text-2xl font-bold">245 kWh</p>
+                        </div>
+                        <div class="glass p-6 rounded-2xl border border-emerald-500/30 text-center">
+                            <p class="text-5xl mb-2">💧</p>
+                            <p class="text-emerald-300 text-sm mb-2">Water Saved</p>
+                            <p class="text-2xl font-bold">1,200 L</p>
+                        </div>
+                        <div class="glass p-6 rounded-2xl border border-emerald-500/30 text-center">
+                            <p class="text-5xl mb-2">♻️</p>
+                            <p class="text-emerald-300 text-sm mb-2">Waste Reduced</p>
+                            <p class="text-2xl font-bold">45 kg</p>
+                        </div>
+                        <div class="glass p-6 rounded-2xl border border-emerald-500/30 text-center">
+                            <p class="text-5xl mb-2">🌍</p>
+                            <p class="text-emerald-300 text-sm mb-2">Lives Impacted</p>
+                            <p class="text-2xl font-bold">4</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Impact Categories -->
+            <h3 class="text-3xl font-black mb-8">Impact Breakdown</h3>
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="impact-metric card-hover">
+                    <p class="text-5xl mb-4">📱</p>
+                    <h4 class="text-xl font-bold mb-2">Phone Usage</h4>
+                    <p class="text-emerald-200 text-sm mb-4">35% reduction</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 35%"></div>
+                    </div>
+                    <p class="text-xs text-emerald-300 mt-2">→ Saved 245 kWh energy</p>
+                </div>
+
+                <div class="impact-metric card-hover">
+                    <p class="text-5xl mb-4">🚴</p>
+                    <h4 class="text-xl font-bold mb-2">Transport</h4>
+                    <p class="text-emerald-200 text-sm mb-4">12 bike commutes</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 72%"></div>
+                    </div>
+                    <p class="text-xs text-emerald-300 mt-2">→ Saved 45 kg CO₂</p>
+                </div>
+
+                <div class="impact-metric card-hover">
+                    <p class="text-5xl mb-4">🌱</p>
+                    <h4 class="text-xl font-bold mb-2">Sustainability</h4>
+                    <p class="text-emerald-200 text-sm mb-4">18 eco-actions</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 88%"></div>
+                    </div>
+                    <p class="text-xs text-emerald-300 mt-2">→ Planted 5 trees</p>
+                </div>
+            </div>
+
+            <!-- Tree Visualization -->
+            <div class="hero-card p-8 mb-12 card-hover">
+                <h3 class="text-2xl font-bold mb-8">🌳 Your Tree Forest</h3>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-6" id="treeForest">
+                    <div class="tree-avatar">🌳</div>
+                    <div class="tree-avatar">🌳</div>
+                    <div class="tree-avatar">🌳</div>
+                    <div class="tree-avatar">🌳</div>
+                    <div class="tree-avatar">🌳</div>
+                </div>
+                <p class="text-emerald-200 text-center mt-8">Plant more trees by completing sustainability quests! 🎯</p>
+            </div>
+
+            <!-- Monthly Comparison -->
+            <div class="glass p-8 rounded-2xl border border-emerald-500/30">
+                <h3 class="text-2xl font-bold mb-8">📈 This Month vs Last Month</h3>
+                <div class="grid md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <p class="text-emerald-300 text-sm mb-2">Credits Earned</p>
+                        <div class="flex items-end justify-center gap-2 h-32">
+                            <div class="chart-bar w-8" style="height: 60%;"></div>
+                            <div class="chart-bar w-8" style="height: 100%; background: linear-gradient(180deg, #10b981, #34d399);"></div>
+                        </div>
+                        <p class="text-sm text-emerald-200 mt-2"><span class="font-bold text-lg">+32%</span> growth</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-emerald-300 text-sm mb-2">Quests Completed</p>
+                        <div class="flex items-end justify-center gap-2 h-32">
+                            <div class="chart-bar w-8" style="height: 70%;"></div>
+                            <div class="chart-bar w-8" style="height: 100%; background: linear-gradient(180deg, #10b981, #34d399);"></div>
+                        </div>
+                        <p class="text-sm text-emerald-200 mt-2"><span class="font-bold text-lg">+28%</span> improvement</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-emerald-300 text-sm mb-2">Phone Reduction</p>
+                        <div class="flex items-end justify-center gap-2 h-32">
+                            <div class="chart-bar w-8" style="height: 80%;"></div>
+                            <div class="chart-bar w-8" style="height: 100%; background: linear-gradient(180deg, #10b981, #34d399);"></div>
+                        </div>
+                        <p class="text-sm text-emerald-200 mt-2"><span class="font-bold text-lg">+18%</span> consistent</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-emerald-300 text-sm mb-2">Community Impact</p>
+                        <div class="flex items-end justify-center gap-2 h-32">
+                            <div class="chart-bar w-8" style="height: 75%;"></div>
+                            <div class="chart-bar w-8" style="height: 100%; background: linear-gradient(180deg, #10b981, #34d399);"></div>
+                        </div>
+                        <p class="text-sm text-emerald-200 mt-2"><span class="font-bold text-lg">+42%</span> amazing</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUESTS TAB -->
+        <div id="quests" class="tab-content animate-in">
+            <div class="mb-12">
+                <h2 class="text-5xl font-black mb-2 gradient-text">Available Quests 🎯</h2>
+                <p class="text-emerald-200 text-lg">Complete missions to earn credits & reduce carbon</p>
+            </div>
+
+            <!-- Quest Filters -->
+            <div class="glass p-4 rounded-xl mb-8 flex gap-4 overflow-x-auto">
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap active:bg-emerald-500/50" onclick="filterQuests('all')">All Quests</button>
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="filterQuests('easy')">Easy</button>
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="filterQuests('medium')">Medium</button>
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="filterQuests('hard')">Hard</button>
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="filterQuests('completed')">Completed</button>
+            </div>
+
+            <!-- Anomaly Alert -->
+            <div id="fraudAlert" class="glass border-l-4 border-yellow-500 p-6 rounded-xl mb-8 hidden">
+                <p class="text-yellow-300 font-bold">⚠️ Anomaly Detected</p>
+                <p class="text-emerald-200 text-sm mt-2">Your account shows unusual activity patterns. Review your analytics.</p>
+            </div>
+
+            <!-- Quests Grid -->
+            <div id="questsList" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+
+        <!-- PHONE TRACKER TAB -->
+        <div id="phone" class="tab-content animate-in">
+            <div class="mb-12">
+                <h2 class="text-5xl font-black mb-2 gradient-text">Phone Usage Tracker 📱</h2>
+                <p class="text-emerald-200 text-lg">Monitor your screen time & earn rewards for reducing usage</p>
+            </div>
+
+            <!-- Today's Stats -->
+            <div class="grid md:grid-cols-4 gap-6 mb-12">
+                <div class="hero-card p-8 card-hover">
+                    <p class="text-emerald-300 text-sm font-bold mb-3">TODAY'S USAGE</p>
+                    <div class="metric-number text-4xl" id="todayUsage">3.2</div>
+                    <p class="text-emerald-200 text-sm mt-2">hours</p>
+                </div>
+                <div class="hero-card p-8 card-hover">
+                    <p class="text-emerald-300 text-sm font-bold mb-3">7-DAY AVERAGE</p>
+                    <div class="metric-number text-4xl" id="avgUsage">4.9</div>
+                    <p class="text-emerald-200 text-sm mt-2">hours</p>
+                </div>
+                <div class="hero-card p-8 card-hover">
+                    <p class="text-emerald-300 text-sm font-bold mb-3">REDUCTION TODAY</p>
+                    <div class="metric-number text-4xl text-blue-400">35%</div>
+                    <p class="text-emerald-200 text-sm mt-2">vs yesterday</p>
+                </div>
+                <div class="hero-card p-8 card-hover">
+                    <p class="text-emerald-300 text-sm font-bold mb-3">CREDITS TODAY</p>
+                    <div class="metric-number text-4xl text-yellow-400">+17</div>
+                    <p class="text-emerald-200 text-sm mt-2">💎 earned</p>
+                </div>
+            </div>
+
+            <!-- Phone Session Logger -->
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="hero-card p-8 card-hover">
+                    <h3 class="text-2xl font-bold mb-6">⏱️ Log Phone Session</h3>
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-emerald-300 font-bold mb-3">Session Duration (minutes)</label>
+                            <input type="number" id="sessionDuration" placeholder="e.g., 45" class="bg-black/30 text-white rounded-xl p-4 border border-emerald-500/30 w-full">
+                        </div>
+                        <div>
+                            <label class="block text-emerald-300 font-bold mb-3">Activity Type</label>
+                            <select id="activityType" class="bg-black/30 text-white rounded-xl p-4 border border-emerald-500/30 w-full">
+                                <option>Social Media</option>
+                                <option>Streaming Video</option>
+                                <option>Gaming</option>
+                                <option>Productive Work</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-emerald-300 font-bold mb-3">Reduction vs Yesterday (%)</label>
+                            <input type="number" id="reductionInput" placeholder="e.g., 35" class="bg-black/30 text-white rounded-xl p-4 border border-emerald-500/30 w-full">
+                        </div>
+                        <button id="logPhoneBtn" class="btn-primary w-full py-4 text-lg font-bold">
+                            📊 Log & Earn Credits
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Weekly Stats -->
+                <div class="hero-card p-8 card-hover">
+                    <h3 class="text-2xl font-bold mb-6">📈 This Week</h3>
+                    <div class="space-y-4">
+                        <div class="glass p-4 rounded-lg border border-emerald-500/30">
+                            <p class="text-emerald-300 text-sm mb-2">Mon</p>
+                            <div class="flex items-center gap-3">
+                                <div class="chart-bar flex-1" style="height: 60px; width: 30px;"></div>
+                                <span class="text-emerald-200">5.2h</span>
+                            </div>
+                        </div>
+                        <div class="glass p-4 rounded-lg border border-emerald-500/30">
+                            <p class="text-emerald-300 text-sm mb-2">Tue</p>
+                            <div class="flex items-center gap-3">
+                                <div class="chart-bar flex-1" style="height: 50px; width: 30px;"></div>
+                                <span class="text-emerald-200">4.8h</span>
+                            </div>
+                        </div>
+                        <div class="glass p-4 rounded-lg border border-emerald-500/30">
+                            <p class="text-emerald-300 text-sm mb-2">Wed</p>
+                            <div class="flex items-center gap-3">
+                                <div class="chart-bar flex-1" style="height: 40px; width: 30px;"></div>
+                                <span class="text-emerald-200">3.2h</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Chart -->
+            <div class="hero-card p-8 card-hover">
+                <h3 class="text-2xl font-bold mb-8">📊 7-Day Usage Trend</h3>
+                <div class="h-80 flex items-end justify-between gap-6" id="weeklyChart"></div>
+            </div>
+        </div>
+
+        <!-- ANALYTICS TAB -->
+        <div id="analytics" class="tab-content animate-in">
+            <div class="mb-12">
+                <h2 class="text-5xl font-black mb-2 gradient-text">Your Analytics 📊</h2>
+                <p class="text-emerald-200 text-lg">Detailed insights into your activity & behavior patterns</p>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="hero-card p-8 card-hover">
+                    <p class="text-emerald-300 text-sm font-bold mb-3">ANOMALY SCORE</p>
+                    <div class="metric-number text-5xl" id="anomalyScore">12%</div>
+                    <div class="progress-bar mt-4">
+                        <div id="anomalyBar" class="progress-fill" style="width: 12%; background: linear-gradient(90deg, #10b981, #10b981);"></div>
+                    </div>
+                    <p class="text-emerald-300 text-xs mt-3 font-bold" id="anomalyStatus">✓ Normal Behavior</p>
+                </div>
+
+                <div class="hero-card p-8 card-hover">
+                    <p class="text-emerald-300 text-sm font-bold mb-3">VERIFICATION RATE</p>
+                    <div class="metric-number text-5xl text-blue-400" id="verifRate">87%</div>
+                    <div class="progress-bar mt-4">
+                        <div id="verifBar" class="progress-fill" style="width: 87%; background: linear-gradient(90deg, #3b82f6, #06b6d4);"></div>
+                    </div>
+                    <p class="text-emerald-200 text-xs mt-3">Submissions approved</p>
+                </div>
+
+                <div class="hero-card p-8 card-hover">
+                    <p class="text-emerald-300 text-sm font-bold mb-3">TRUST SCORE</p>
+                    <div class="metric-number text-5xl text-emerald-400" id="trustAnalytics">75%</div>
+                    <div class="progress-bar mt-4">
+                        <div id="trustBar" class="progress-fill" style="width: 75%;"></div>
+                    </div>
+                    <p class="text-emerald-200 text-xs mt-3">Good standing</p>
+                </div>
+            </div>
+
+            <!-- Anomaly Breakdown -->
+            <div class="hero-card p-8 mb-8 card-hover">
+                <h3 class="text-2xl font-bold mb-6">🚨 Anomaly Breakdown</h3>
+                <div id="anomalyList" class="space-y-4"></div>
+            </div>
+
+            <!-- Velocity Analysis -->
+            <div class="hero-card p-8 card-hover">
+                <h3 class="text-2xl font-bold mb-8">⚡ Activity Velocity (Last 7 Days)</h3>
+                <div class="flex items-end justify-between h-64 bg-black/30 p-4 rounded-lg gap-2" id="velocityChart"></div>
+            </div>
+        </div>
+
+        <!-- LEADERBOARD TAB -->
+        <div id="leaderboard" class="tab-content animate-in">
+            <div class="mb-12">
+                <h2 class="text-5xl font-black mb-2 gradient-text">Global Leaderboard 🏆</h2>
+                <p class="text-emerald-200 text-lg">Compete with the community. Top performers earn bonus rewards!</p>
+            </div>
+
+            <!-- Leaderboard Info -->
+            <div class="glass p-6 rounded-xl mb-8 border border-emerald-500/30">
+                <p class="text-emerald-300 text-sm"><strong>💡 How it Works:</strong> Rankings show credits × verification rate. Only verified achievements count!</p>
+            </div>
+
+            <!-- Sort Options -->
+            <div class="glass p-4 rounded-xl mb-8 flex gap-4 overflow-x-auto">
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="updateLeaderboard('weighted')">Weighted Score</button>
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="updateLeaderboard('credits')">Credits</button>
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="updateLeaderboard('verification')">Verification</button>
+                <button class="btn-secondary px-6 py-2 whitespace-nowrap" onclick="updateLeaderboard('trust')">Trust Score</button>
+            </div>
+
+            <!-- Leaderboard List -->
+            <div id="leaderboardList" class="space-y-3"></div>
+        </div>
+
+        <!-- SUBMISSION/PROOF TAB (Hidden by default, used for quest submission) -->
+        <div id="submission" class="tab-content animate-in hidden">
+            <div class="mb-12">
+                <h2 class="text-5xl font-black mb-2 gradient-text">Submit Quest Proof 📤</h2>
+                <p class="text-emerald-200 text-lg">Upload evidence for peer review & verification</p>
+            </div>
+
+            <div class="hero-card p-8 card-hover">
+                <h3 class="text-2xl font-bold mb-8">Quest Proof Submission</h3>
+                
+                <div class="mb-8">
+                    <label class="block text-emerald-300 font-bold mb-3">Select Quest</label>
+                    <select id="questSelect" onchange="updateQuestDetails()" class="bg-black/30 text-white rounded-xl p-4 border border-emerald-500/30 w-full">
+                        <option value="">-- Choose a quest --</option>
+                    </select>
+                </div>
+
+                <div id="questDetails" class="mb-8 p-6 bg-black/30 rounded-xl border border-emerald-500/30 hidden">
+                    <p id="questDescSubmit" class="text-emerald-200 mb-4"></p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-emerald-300 text-xs font-bold">VERIFICATION REQUIRED</p>
+                            <p class="text-lg font-bold" id="questVerifTypeSubmit"></p>
+                        </div>
+                        <div>
+                            <p class="text-emerald-300 text-xs font-bold">POTENTIAL REWARD</p>
+                            <p class="text-2xl font-black text-yellow-300" id="questRewardSubmit"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proof Upload -->
+                <div class="mb-8">
+                    <label class="block text-emerald-300 font-bold mb-3">📸 Upload Evidence</label>
+                    <input type="file" id="proofFile" accept="image/*,video/*" onchange="handleFileUpload(event)" class="w-full bg-black/30 text-white rounded-xl p-4 border-2 border-dashed border-emerald-500/30">
+                    <div id="fileInfo" class="text-sm text-emerald-200 mt-4 hidden">
+                        <p><strong>File:</strong> <span id="fileName"></span></p>
+                        <p><strong>Size:</strong> <span id="fileSize"></span></p>
+                        <p><strong>Type:</strong> <span id="fileType"></span></p>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-8">
+                    <label class="block text-emerald-300 font-bold mb-3">📝 Describe Your Action</label>
+                    <textarea id="proofDescription" rows="5" placeholder="Explain what you did to complete this quest..." class="bg-black/30 text-white rounded-xl p-4 border border-emerald-500/30 w-full resize-none"></textarea>
+                </div>
+
+                <!-- Evidence Type -->
+                <div class="mb-8">
+                    <label class="block text-emerald-300 font-bold mb-3">Evidence Type</label>
+                    <select id="evidenceType" class="bg-black/30 text-white rounded-xl p-4 border border-emerald-500/30 w-full">
+                        <option value="screenshot">Screenshot</option>
+                        <option value="video">Video Proof</option>
+                        <option value="selfie">Selfie Evidence</option>
+                        <option value="log">System Log</option>
+                    </select>
+                </div>
+
+                <!-- Location Toggle -->
+                <div class="mb-8 p-4 bg-black/30 rounded-xl border border-emerald-500/30">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" id="includeLocation" onchange="toggleLocation()" class="w-5 h-5">
+                        <span class="text-emerald-300 font-bold">Include Geolocation (optional)</span>
+                    </label>
+                    <p class="text-emerald-200 text-xs mt-2">This helps prevent fraud but is optional</p>
+                    <div id="locationInfo" class="text-sm text-emerald-300 mt-3 hidden">
+                        <p><strong>Location:</strong> <span id="locationText">--</span></p>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex gap-4">
+                    <button onclick="submitProof()" class="btn-primary flex-1 py-4 text-lg font-bold">
+                        🚀 Submit for Review
+                    </button>
+                    <button onclick="resetSubmissionForm()" class="btn-secondary flex-1 py-4">
+                        🔄 Clear Form
+                    </button>
+                </div>
+
+                <div id="submissionStatus" class="mt-8 hidden p-6 rounded-lg border-l-4"></div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal-backdrop">
+        <div class="modal">
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h2 class="text-3xl font-black gradient-text mb-2">Your Profile 👤</h2>
+                    <p class="text-emerald-200 text-sm">Member since Nov 2024</p>
+                </div>
+                <button onclick="closeModal()" class="text-3xl cursor-pointer hover:text-emerald-300">✕</button>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="glass p-6 rounded-xl border border-emerald-500/30">
+                    <p class="text-emerald-300 text-xs font-bold mb-2">TOTAL CREDITS</p>
+                    <p class="text-4xl font-black gradient-text" id="profileCredits">1,250</p>
+                </div>
+                <div class="glass p-6 rounded-xl border border-emerald-500/30">
+                    <p class="text-emerald-300 text-xs font-bold mb-2">TRUST SCORE</p>
+                    <p class="text-4xl font-black text-blue-400" id="profileTrust">75%</p>
+                </div>
+                <div class="glass p-6 rounded-xl border border-emerald-500/30">
+                    <p class="text-emerald-300 text-xs font-bold mb-2">QUESTS DONE</p>
+                    <p class="text-4xl font-black" id="profileQuests">12</p>
+                </div>
+                <div class="glass p-6 rounded-xl border border-emerald-500/30">
+                    <p class="text-emerald-300 text-xs font-bold mb-2">VERIFICATION RATE</p>
+                    <p class="text-4xl font-black text-emerald-400" id="profileVerifRate">87%</p>
+                </div>
+            </div>
+
+            <button onclick="closeModal()" class="btn-primary w-full py-3">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CORE DATA STRUCTURES & STATE MANAGEMENT
+        // ============================================
+
+        const USER_ID = generateDeviceFingerprint();
+        const STORAGE_KEY = `carboncred_${USER_ID}`;
+
+        // Quest Definitions
+        const QUESTS = [
+            {
+                id: 1,
+                title: "Phone-Free Hour",
+                description: "Reduce phone usage by 50% for 1 hour",
+                reward: 20,
+                verificationType: "device-sync",
+                difficulty: "easy",
+                timeLimit: 60,
+                maxCompletionsPerDay: 3,
+                icon: "📱"
+            },
+            {
+                id: 2,
+                title: "Digital Detox Day",
+                description: "Reduce screen time by 75% for 24 hours",
+                reward: 100,
+                verificationType: "screenshot",
+                difficulty: "hard",
+                timeLimit: 1440,
+                maxCompletionsPerDay: 1,
+                icon: "🧘"
+            },
+            {
+                id: 3,
+                title: "Bike Commute Challenge",
+                description: "Use bike instead of car for 30 mins",
+                reward: 50,
+                verificationType: "geolocation + selfie",
+                difficulty: "medium",
+                timeLimit: 30,
+                maxCompletionsPerDay: 2,
+                icon: "🚴"
+            },
+            {
+                id: 4,
+                title: "Plant Care Check",
+                description: "Take a photo caring for your plant",
+                reward: 15,
+                verificationType: "photo",
+                difficulty: "easy",
+                timeLimit: 30,
+                maxCompletionsPerDay: 5,
+                icon: "🌱"
+            },
+            {
+                id: 5,
+                title: "Zero-Waste Shopping",
+                description: "Complete a shopping trip without single-use plastic",
+                reward: 75,
+                verificationType: "video + receipt",
+                difficulty: "hard",
+                timeLimit: 120,
+                maxCompletionsPerDay: 1,
+                icon: "♻️"
+            },
+            {
+                id: 6,
+                title: "Energy Saver",
+                description: "Unplug devices & reduce electricity usage",
+                reward: 30,
+                verificationType: "screenshot",
+                difficulty: "easy",
+                timeLimit: 60,
+                maxCompletionsPerDay: 2,
+                icon: "⚡"
+            }
+        ];
+
+        // User State
+        let userData = {
+            userId: USER_ID,
+            credits: 1250,
+            trustScore: 75,
+            streak: 7,
+            submissions: [],
+            questHistory: [],
+            feedPosts: [],
+            familyMembers: [],
+            device: generateDeviceFingerprint(),
+            accountCreated: new Date().toISOString(),
+            lastSubmissionTime: null,
+            anomalyFlags: [],
+            verificationRate: 0.87,
+            trees: 5,
+            phoneReduction: 35,
+            questsCompleted: 12,
+            activities: [],
+            carbonSaved: 87.5,
+            energySaved: 245,
+            waterSaved: 1200,
+            wasteReduced: 45
+        };
+
+        // Sample Feed Data
+        const sampleFeedPosts = [
+            {
+                id: 1,
+                username: "EcoWarrior55",
+                avatar: "👨",
+                action: "Completed Digital Detox Day",
+                credits: 100,
+                timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+                likes: 24,
+                comments: 5,
+                verified: true
+            },
+            {
+                id: 2,
+                username: "GreenGamer92",
+                avatar: "👩",
+                action: "Reduced phone usage by 40% today",
+                credits: 50,
+                timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+                likes: 18,
+                comments: 3,
+                verified: true
+            },
+            {
+                id: 3,
+                username: "SustainableSam",
+                avatar: "👨",
+                action: "Planted a tree & earned 100 credits",
+                credits: 100,
+                timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+                likes: 42,
+                comments: 8,
+                verified: true
+            }
+        ];
+
+        // Sample Family Data
+        const sampleFamilyMembers = [
+            {
+                id: 1,
+                name: "Dad",
+                relation: "Father",
+                avatar: "👨",
+                credits: 1850,
+                streak: 12,
+                trustScore: 82,
+                trees: 3
+            },
+            {
+                id: 2,
+                name: "Mom",
+                relation: "Mother",
+                avatar: "👩",
+                credits: 1620,
+                streak: 9,
+                trustScore: 88,
+                trees: 4
+            },
+            {
+                id: 3,
+                name: "Brother",
+                relation: "Brother",
+                avatar: "👦",
+                credits: 950,
+                streak: 5,
+                trustScore: 71,
+                trees: 2
+            }
+        ];
+
+        // ============================================
+        // DEVICE FINGERPRINTING & SECURITY
+        // ============================================
+
+        function generateDeviceFingerprint() {
+            const fingerprint = {
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                platform: navigator.platform,
+                cores: navigator.hardwareConcurrency || 0,
+                screen: `${screen.width}x${screen.height}`
+            };
+            
+            const hash = btoa(JSON.stringify(fingerprint));
+            return hash.substring(0, 16);
+        }
+
+        // ============================================
+        // ANOMALY DETECTION ENGINE
+        // ============================================
+
+        class AnomalyDetector {
+            static detectAnomalies(userData) {
+                const anomalies = [];
+                
+                // 1. Velocity Check
+                const recentSubmissions = userData.submissions.filter(s => 
+                    new Date(s.timestamp) > new Date(Date.now() - 60 * 60 * 1000)
+                );
+                if (recentSubmissions.length > 5) {
+                    anomalies.push({
+                        type: 'VELOCITY_SPIKE',
+                        severity: 'HIGH',
+                        message: `${recentSubmissions.length} submissions in last hour (max: 5)`,
+                        score: Math.min(40, recentSubmissions.length * 8)
+                    });
+                }
+
+                // 2. Time Pattern Check
+                userData.submissions.forEach((submission, idx) => {
+                    if (idx > 0) {
+                        const prevSubmission = userData.submissions[idx - 1];
+                        const timeDiff = (new Date(submission.timestamp) - new Date(prevSubmission.timestamp)) / 1000 / 60;
+                        const questDuration = QUESTS.find(q => q.id == submission.questId)?.timeLimit || 60;
+                        
+                        if (timeDiff < questDuration + 5) {
+                            anomalies.push({
+                                type: 'IMPOSSIBLE_TIMING',
+                                severity: 'HIGH',
+                                message: `Quest completed ${timeDiff}min after previous (minimum: ${questDuration + 5}min)`,
+                                score: 35
+                            });
+                        }
+                    }
+                });
+
+                // 3. Perfect Success Rate
+                if (userData.submissions.length > 20 && userData.verificationRate === 1.0) {
+                    anomalies.push({
+                        type: 'PERFECT_RECORD',
+                        severity: 'LOW',
+                        message: '100% verification rate with 20+ submissions (unlikely)',
+                        score: 10
+                    });
+                }
+
+                return anomalies;
+            }
+
+            static calculateAnomalyScore(anomalies) {
+                return Math.min(100, anomalies.reduce((sum, a) => sum + a.score, 0));
+            }
+
+            static getAnomalyStatus(score) {
+                if (score < 20) return { level: 'SAFE', color: 'green', message: '✓ Normal Behavior' };
+                if (score < 50) return { level: 'CAUTION', color: 'yellow', message: '⚠️ Monitor Activity' };
+                return { level: 'HIGH_RISK', color: 'red', message: '🚨 Review Required' };
+            }
+        }
+
+        // ============================================
+        // RATE LIMITING & VELOCITY CHECKS
+        // ============================================
+
+        class RateLimiter {
+            static checkRateLimits(userData) {
+                const limits = {
+                    perHour: 5,
+                    perDay: 15,
+                    cooldownMinutes: 15
+                };
+
+                const now = new Date();
+                const oneHourAgo = new Date(now - 60 * 60 * 1000);
+                const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000);
+
+                const lastHour = userData.submissions.filter(s => new Date(s.timestamp) > oneHourAgo).length;
+                const lastDay = userData.submissions.filter(s => new Date(s.timestamp) > oneDayAgo).length;
+
+                const violations = [];
+
+                if (lastHour >= limits.perHour) {
+                    violations.push(`You've reached the 5 submissions/hour limit.`);
+                }
+
+                if (lastDay >= limits.perDay) {
+                    violations.push(`You've reached the 15 submissions/day limit.`);
+                }
+
+                if (userData.lastSubmissionTime) {
+                    const minutesSinceLastSubmission = (now - new Date(userData.lastSubmissionTime)) / 1000 / 60;
+                    if (minutesSinceLastSubmission < limits.cooldownMinutes) {
+                        violations.push(`Wait ${Math.ceil(limits.cooldownMinutes - minutesSinceLastSubmission)} more minutes.`);
+                    }
+                }
+
+                return { allowed: violations.length === 0, violations };
+            }
+        }
+
+        // ============================================
+        // CRYPTOGRAPHIC VERIFICATION
+        // ============================================
+
+        class CryptoVerifier {
+            static async createSubmissionHash(submission) {
+                const data = JSON.stringify({
+                    questId: submission.questId,
+                    timestamp: submission.timestamp,
+                    deviceId: submission.deviceId,
+                    description: submission.description
+                });
+                
+                const encoder = new TextEncoder();
+                const dataBuffer = encoder.encode(data);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            }
+        }
+
+        // ============================================
+        // INITIALIZATION & STORAGE
+        // ============================================
+
+        function initializeUserData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                userData = JSON.parse(stored);
+            } else {
+                userData.familyMembers = sampleFamilyMembers;
+                userData.feedPosts = sampleFeedPosts;
+            }
+            saveUserData();
+            renderAll();
+        }
+
+        function saveUserData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(userData));
+        }
+
+        // ============================================
+        // RENDERING FUNCTIONS - DASHBOARD
+        // ============================================
+
+        function renderDashboard() {
+            document.getElementById('dashCredits').textContent = userData.credits.toLocaleString();
+            document.getElementById('dashTrees').textContent = userData.trees;
+            document.getElementById('dashStreak').textContent = userData.streak;
+            document.getElementById('dashReduction').textContent = userData.phoneReduction + '%';
+            document.getElementById('dashQuests').textContent = userData.questsCompleted;
+            document.getElementById('trustScoreText').textContent = userData.trustScore;
+            document.getElementById('navCredits').textContent = userData.credits.toLocaleString();
+            document.getElementById('navStreak').textContent = userData.streak;
+            document.getElementById('trustScoreFill').style.width = userData.trustScore + '%';
+
+            const activityList = document.getElementById('activityList');
+            if (activityList) {
+                activityList.innerHTML = userData.activities.slice(-5).reverse().map(activity => `
+                    <div class="glass p-6 rounded-xl border border-emerald-500/30 card-hover">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <span class="text-4xl">${activity.icon}</span>
+                                <div>
+                                    <p class="text-lg font-bold">${activity.type === 'submission' ? 'Quest: ' + activity.quest : activity.type === 'phone_log' ? 'Phone Session: ' + activity.activity : activity.type}</p>
+                                    <p class="text-emerald-300 text-sm">${formatTime(activity.timestamp)}</p>
+                                </div>
+                            </div>
+                            ${activity.credits ? `<p class="text-2xl font-black text-yellow-300">+${activity.credits}</p>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ============================================
+        // RENDERING FUNCTIONS - FEED
+        // ============================================
+
+        function renderFeed(filter = 'all') {
+            const feedContainer = document.getElementById('feedContainer');
+            feedContainer.innerHTML = '';
+
+            let posts = userData.feedPosts;
+            if (filter !== 'all') {
+                posts = posts.filter(p => {
+                    if (filter === 'quests') return p.action.includes('Completed');
+                    if (filter === 'phone') return p.action.includes('phone');
+                    if (filter === 'trees') return p.action.includes('tree');
+                    if (filter === 'streaks') return p.action.includes('Streak');
+                    return true;
+                });
+            }
+
+            posts.forEach(post => {
+                feedContainer.innerHTML += `
+                    <div class="feed-post card-hover">
+                        <div class="flex items-start gap-4">
+                            <div class="text-3xl">${post.avatar}</div>
+                            <div class="flex-1">
+                                <div class="flex justify-between items-start mb-2">
+                                    <div>
+                                        <p class="font-bold text-lg">${post.username}</p>
+                                        <p class="text-emerald-300 text-xs">${formatTime(post.timestamp)}</p>
+                                    </div>
+                                    ${post.verified ? '<span class="eco-badge px-3 py-1 rounded-full text-xs font-bold">✓ Verified</span>' : ''}
+                                </div>
+                                <p class="text-emerald-100 mb-4">${post.action}</p>
+                                <div class="flex items-center gap-6 text-sm text-emerald-300">
+                                    <span class="text-yellow-300 font-bold">💎 ${post.credits} credits</span>
+                                    <button class="hover:text-emerald-100">❤️ ${post.likes}</button>
+                                    <button class="hover:text-emerald-100">💬 ${post.comments}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function createPost() {
+            const content = document.getElementById('postContent').value;
+            if (!content.trim()) {
+                alert('Please write something!');
+                return;
+            }
+
+            const newPost = {
+                id: userData.feedPosts.length + 1,
+                username: 'You',
+                avatar: '👤',
+                action: content,
+                credits: Math.floor(Math.random() * 50) + 20,
+                timestamp: new Date().toISOString(),
+                likes: 0,
+                comments: 0,
+                verified: true
+            };
+
+            userData.feedPosts.unshift(newPost);
+            userData.credits += 10; // Bonus for posting
+            userData.activities.push({
+                type: 'post',
+                content: content,
+                timestamp: new Date().toISOString(),
+                icon: '📱',
+                credits: 10
+            });
+            saveUserData();
+            document.getElementById('postContent').value = '';
+            renderFeed();
+            renderDashboard();
+        }
+
+        function filterFeed(type) {
+            renderFeed(type);
+        }
+
+        // ============================================
+        // RENDERING FUNCTIONS - FAMILY
+        // ============================================
+
+        function renderFamilyMembers() {
+            const container = document.getElementById('familyMembersContainer');
+            container.innerHTML = '';
+
+            userData.familyMembers.forEach(member => {
+                container.innerHTML += `
+                    <div class="family-member-card card-hover">
+                        <div class="text-6xl mb-4">${member.avatar}</div>
+                        <h4 class="text-xl font-bold mb-1">${member.name}</h4>
+                        <p class="text-emerald-300 text-xs mb-4">${member.relation}</p>
+                        <div class="space-y-3 text-sm">
+                            <div class="glass p-3 rounded-lg">
+                                <p class="text-emerald-300 text-xs">Credits</p>
+                                <p class="font-bold text-lg">${member.credits}</p>
+                            </div>
+                            <div class="glass p-3 rounded-lg">
+                                <p class="text-emerald-300 text-xs">Streak</p>
+                                <p class="font-bold text-lg">🔥 ${member.streak}</p>
+                            </div>
+                            <div class="glass p-3 rounded-lg">
+                                <p class="text-emerald-300 text-xs">Trees</p>
+                                <p class="font-bold text-lg">🌳 ${member.trees}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Update family stats
+            const totalCredits = userData.familyMembers.reduce((sum, m) => sum + m.credits, 0) + userData.credits;
+            const totalTrees = userData.familyMembers.reduce((sum, m) => sum + m.trees, 0) + userData.trees;
+            const totalCO2 = totalTrees * 20 + Math.random() * 50;
+
+            document.getElementById('familyTotalCredits').textContent = totalCredits.toLocaleString();
+            document.getElementById('familyTotalTrees').textContent = totalTrees;
+            document.getElementById('familyTotalCO2').textContent = Math.round(totalCO2);
+        }
+
+        // ============================================
+        // RENDERING FUNCTIONS - QUESTS
+        // ============================================
+
+        function renderQuests(filter = 'all') {
+            const questsList = document.getElementById('questsList');
+            const questSelect = document.getElementById('questSelect');
+            
+            questsList.innerHTML = '';
+            if (questSelect) questSelect.innerHTML = '<option value="">-- Choose a quest --</option>';
+
+            let filtered = QUESTS;
+            if (filter !== 'all') {
+                filtered = QUESTS.filter(q => q.difficulty === filter);
+            }
+
+            filtered.forEach(quest => {
+                const userSubmissions = userData.submissions.filter(s => s.questId === quest.id).length;
+                const canSubmit = userSubmissions < quest.maxCompletionsPerDay;
+
+                questsList.innerHTML += `
+                    <div class="glass p-8 rounded-2xl border border-emerald-500/30 card-hover">
+                        <div class="flex justify-between items-start mb-6">
+                            <div class="flex items-start gap-4">
+                                <span class="text-5xl">${quest.icon}</span>
+                                <div>
+                                    <p class="text-2xl font-bold">${quest.title}</p>
+                                    <p class="text-emerald-200">${quest.description}</p>
+                                </div>
+                            </div>
+                            <span class="glass px-4 py-2 rounded-lg text-sm font-bold ${canSubmit ? 'text-emerald-300' : 'text-yellow-300'}">
+                                ${canSubmit ? `${quest.maxCompletionsPerDay - userSubmissions}/${quest.maxCompletionsPerDay}` : 'Max reached'}
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-4 mb-6 bg-black/30 p-4 rounded-xl">
+                            <div class="text-center">
+                                <p class="text-emerald-300 text-xs font-bold">REWARD</p>
+                                <p class="text-2xl font-black text-yellow-300">${quest.reward}</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-emerald-300 text-xs font-bold">DIFFICULTY</p>
+                                <p class="text-lg font-bold capitalize">${quest.difficulty}</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-emerald-300 text-xs font-bold">TIME LIMIT</p>
+                                <p class="text-lg font-bold">${quest.timeLimit}m</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-emerald-300 text-xs font-bold">VERIFICATION</p>
+                                <p class="text-xs font-bold">${quest.verificationType}</p>
+                            </div>
+                        </div>
+
+                        <button onclick="switchTab('submission'); document.getElementById('questSelect').value = ${quest.id}; updateQuestDetails();" 
+                                class="btn-primary w-full py-3 font-bold" ${canSubmit ? '' : 'disabled opacity-50 cursor-not-allowed'}>
+                            Submit Proof 🚀
+                        </button>
+                    </div>
+                `;
+
+                if (questSelect) questSelect.innerHTML += `<option value="${quest.id}">${quest.title}</option>`;
+            });
+        }
+
+        function filterQuests(type) {
+            renderQuests(type);
+        }
+
+        // ============================================
+        // PHONE TRACKER
+        // ============================================
+
+        function initPhoneTracker() {
+            const logPhoneBtn = document.getElementById('logPhoneBtn');
+            if (logPhoneBtn) {
+                logPhoneBtn.addEventListener('click', logPhoneSession);
+            }
+            renderWeeklyChart();
+        }
+
+        function logPhoneSession() {
+            const duration = parseInt(document.getElementById('sessionDuration').value);
+            const activity = document.getElementById('activityType').value;
+            const reduction = parseInt(document.getElementById('reductionInput').value);
+
+            if (!duration || !reduction) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            const creditsEarned = Math.floor(reduction / 10) * 5;
+            userData.credits += creditsEarned;
+            userData.phoneReduction = reduction;
+            userData.activities.push({
+                type: 'phone_log',
+                activity: activity,
+                reduction: reduction + '%',
+                timestamp: new Date().toISOString(),
+                icon: '📱',
+                credits: creditsEarned
+            });
+            saveUserData();
+
+            alert(`✓ Logged! You earned ${creditsEarned} credits`);
+            document.getElementById('sessionDuration').value = '';
+            document.getElementById('reductionInput').value = '';
+            renderDashboard();
+            renderWeeklyChart();
+        }
+
+        function renderWeeklyChart() {
+            const weeklyChart = document.getElementById('weeklyChart');
+            if (!weeklyChart) return;
+
+            weeklyChart.innerHTML = '';
+            const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            const usage = [5.2, 4.8, 3.2, 4.1, 3.8, 2.9, 3.2];
+
+            days.forEach((day, idx) => {
+                const height = (usage[idx] / 6) * 100;
+                weeklyChart.innerHTML += `
+                    <div class="flex flex-col items-center flex-1">
+                        <div class="chart-bar w-full max-w-12" style="height: ${height}%; min-height: 20px;"></div>
+                        <p class="text-xs mt-4 text-emerald-300">${day}</p>
+                        <p class="text-xs text-emerald-200">${usage[idx]}h</p>
+                    </div>
+                `;
+            });
+        }
+
+        // ============================================
+        // ANALYTICS & ANOMALY DETECTION
+        // ============================================
+
+        function updateAnalytics() {
+            const anomalies = AnomalyDetector.detectAnomalies(userData);
+            const anomalyScore = AnomalyDetector.calculateAnomalyScore(anomalies);
+            const statusInfo = AnomalyDetector.getAnomalyStatus(anomalyScore);
+
+            document.getElementById('anomalyScore').textContent = anomalyScore + '%';
+            document.getElementById('anomalyBar').style.width = anomalyScore + '%';
+            document.getElementById('anomalyBar').style.background = 
+                anomalyScore < 20 ? 'linear-gradient(90deg, #10b981, #10b981)' :
+                anomalyScore < 50 ? 'linear-gradient(90deg, #f59e0b, #f59e0b)' :
+                'linear-gradient(90deg, #dc2626, #dc2626)';
+            document.getElementById('anomalyStatus').textContent = statusInfo.message;
+            document.getElementById('trustAnalytics').textContent = userData.trustScore + '%';
+            document.getElementById('trustBar').style.width = userData.trustScore + '%';
+
+            const verifRate = userData.submissions.length > 0 ? 
+                Math.round((userData.submissions.filter(s => s.status === 'VERIFIED').length / userData.submissions.length) * 100) : 0;
+            document.getElementById('verifRate').textContent = verifRate + '%';
+            document.getElementById('verifBar').style.width = verifRate + '%';
+
+            const anomalyList = document.getElementById('anomalyList');
+            if (anomalyList) {
+                anomalyList.innerHTML = '';
+                if (anomalies.length === 0) {
+                    anomalyList.innerHTML = '<p class="text-emerald-400 font-bold text-lg">✓ No anomalies detected - Clean record!</p>';
+                } else {
+                    anomalies.forEach(anomaly => {
+                        const severityColor = anomaly.severity === 'HIGH' ? 'border-red-500 bg-red-500/10' : 
+                                             anomaly.severity === 'MEDIUM' ? 'border-yellow-500 bg-yellow-500/10' : 'border-blue-500 bg-blue-500/10';
+                        const severityTextColor = anomaly.severity === 'HIGH' ? 'text-red-400' : 
+                                                 anomaly.severity === 'MEDIUM' ? 'text-yellow-400' : 'text-blue-400';
+                        
+                        anomalyList.innerHTML += `
+                            <div class="p-4 ${severityColor} rounded-lg border-l-4">
+                                <p class="font-bold ${severityTextColor}">${anomaly.type}</p>
+                                <p class="text-emerald-200 text-sm mt-2">${anomaly.message}</p>
+                                <p class="text-xs text-emerald-300 mt-2">Risk Score: +${anomaly.score}%</p>
+                            </div>
+                        `;
+                    });
+                }
+            }
+
+            // Velocity chart
+            const velocityChart = document.getElementById('velocityChart');
+            if (velocityChart) {
+                velocityChart.innerHTML = '';
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toDateString().substring(0, 10);
+                    
+                    const daySubmissions = userData.submissions.filter(s => {
+                        const subDate = new Date(s.timestamp).toDateString().substring(0, 10);
+                        return subDate === dateStr;
+                    }).length;
+
+                    const height = Math.max(20, daySubmissions * 30);
+                    velocityChart.innerHTML += `
+                        <div class="flex flex-col items-center flex-1">
+                            <div class="chart-bar" style="height: ${height}px; width: 80%;"></div>
+                            <p class="text-xs mt-2 text-emerald-300">${date.getDate()}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            if (anomalyScore > 50) {
+                document.getElementById('fraudAlert').classList.remove('hidden');
+            } else {
+                document.getElementById('fraudAlert').classList.add('hidden');
+            }
+
+            userData.anomalyFlags = anomalies;
+            saveUserData();
+        }
+
+        // ============================================
+        // LEADERBOARD SYSTEM
+        // ============================================
+
+        function updateLeaderboard(sortBy = 'weighted') {
+            // Sample leaderboard data
+            const players = [
+                { rank: 1, name: 'EcoKing99', credits: 5240, verifRate: 0.92, trustScore: 88 },
+                { rank: 2, name: 'GreenChamp', credits: 4890, verifRate: 0.88, trustScore: 82 },
+                { rank: 3, name: 'SustainableSam', credits: 4650, verifRate: 0.85, trustScore: 79 },
+                { rank: 4, name: 'EcoWarrior55', credits: userData.credits, verifRate: userData.verificationRate, trustScore: userData.trustScore },
+                { rank: 5, name: 'ClimateHero', credits: 3200, verifRate: 0.45, trustScore: 45 },
+                { rank: 6, name: 'GreenGamer92', credits: 3100, verifRate: 0.78, trustScore: 72 },
+                { rank: 7, name: 'TreePlanter', credits: 2950, verifRate: 0.81, trustScore: 75 }
+            ];
+
+            // Sort based on selection
+            if (sortBy === 'weighted') {
+                players.sort((a, b) => (b.credits * b.verifRate) - (a.credits * a.verifRate));
+            } else if (sortBy === 'credits') {
+                players.sort((a, b) => b.credits - a.credits);
+            } else if (sortBy === 'verification') {
+                players.sort((a, b) => b.verifRate - a.verifRate);
+            } else if (sortBy === 'trust') {
+                players.sort((a, b) => b.trustScore - a.trustScore);
+            }
+
+            const leaderboardList = document.getElementById('leaderboardList');
+            leaderboardList.innerHTML = '';
+
+            players.forEach((player, idx) => {
+                const weightedScore = Math.round(player.credits * player.verifRate);
+                const isCurrentUser = player.name === 'EcoWarrior55';
+                const medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : '';
+                
+                const bgClass = idx === 0 ? 'bg-yellow-500/10 border-yellow-500' : 
+                               idx === 1 ? 'bg-gray-400/10 border-gray-400' : 
+                               idx === 2 ? 'bg-orange-500/10 border-orange-500' : 
+                               isCurrentUser ? 'bg-emerald-500/10 border-emerald-500' : 'border-emerald-500/20';
+
+                leaderboardList.innerHTML += `
+                    <div class="glass p-6 rounded-2xl border-l-4 ${bgClass} card-hover">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-6 flex-1">
+                                <div class="text-3xl font-black w-12">${medal || '#' + (idx + 1)}</div>
+                                <div>
+                                    <p class="text-xl font-bold">${player.name} ${isCurrentUser ? '(You)' : ''}</p>
+                                    <div class="flex gap-6 text-sm text-emerald-300 mt-2">
+                                        <span>Trust: ${player.trustScore}%</span>
+                                        <span>Verified: ${Math.round(player.verifRate * 100)}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-3xl font-black text-yellow-300">${player.credits}</p>
+                                <p class="text-sm text-emerald-300">Weighted: ${weightedScore}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // ============================================
+        // SUBMISSION & PROOF SYSTEM
+        // ============================================
+
+        let currentSubmissionFile = null;
+        let currentLocation = null;
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            currentSubmissionFile = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                uploadTime: new Date().toISOString(),
+                lastModified: file.lastModified
+            };
+
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+            document.getElementById('fileType').textContent = file.type || 'Unknown';
+            document.getElementById('fileInfo').classList.remove('hidden');
+        }
+
+        function toggleLocation() {
+            if (document.getElementById('includeLocation').checked) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        currentLocation = {
+                            lat: position.coords.latitude,
+                            lon: position.coords.longitude,
+                            accuracy: position.coords.accuracy,
+                            timestamp: new Date().toISOString()
+                        };
+                        document.getElementById('locationText').textContent = 
+                            `${currentLocation.lat.toFixed(4)}, ${currentLocation.lon.toFixed(4)} (±${currentLocation.accuracy.toFixed(0)}m)`;
+                        document.getElementById('locationInfo').classList.remove('hidden');
+                    },
+                    (error) => {
+                        console.log('Location access denied');
+                        document.getElementById('includeLocation').checked = false;
+                    }
+                );
+            } else {
+                currentLocation = null;
+                document.getElementById('locationInfo').classList.add('hidden');
+            }
+        }
+
+        function updateQuestDetails() {
+            const questId = document.getElementById('questSelect').value;
+            if (!questId) {
+                document.getElementById('questDetails').classList.add('hidden');
+                return;
+            }
+
+            const quest = QUESTS.find(q => q.id == questId);
+            if (quest) {
+                document.getElementById('questDescSubmit').textContent = quest.description;
+                document.getElementById('questVerifTypeSubmit').textContent = quest.verificationType;
+                document.getElementById('questRewardSubmit').textContent = `${quest.reward} 💎`;
+                document.getElementById('questDetails').classList.remove('hidden');
+            }
+        }
+
+        async function submitProof() {
+            const questId = document.getElementById('questSelect').value;
+            const description = document.getElementById('proofDescription').value;
+            const evidenceType = document.getElementById('evidenceType').value;
+
+            if (!questId || !description) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            // Rate Limiting Check
+            const rateLimitCheck = RateLimiter.checkRateLimits(userData);
+            if (!rateLimitCheck.allowed) {
+                const statusDiv = document.getElementById('submissionStatus');
+                statusDiv.classList.add('border-red-500', 'bg-red-500/10');
+                statusDiv.innerHTML = `<p class="text-red-400 font-bold">⚠️ Rate Limit Exceeded</p>` + 
+                    rateLimitCheck.violations.map(v => `<p class="text-red-300 text-sm">• ${v}</p>`).join('');
+                statusDiv.classList.remove('hidden');
+                return;
+            }
+
+            // Create submission
+            const submission = {
+                id: 'sub_' + Date.now(),
+                questId: parseInt(questId),
+                timestamp: new Date().toISOString(),
+                description,
+                evidenceType,
+                file: currentSubmissionFile,
+                location: currentLocation,
+                deviceId: USER_ID,
+                status: 'PENDING',
+                hash: null,
+                approvals: 0,
+                rejections: 0,
+                creditsAwarded: false
+            };
+
+            // Calculate hash
+            submission.hash = await CryptoVerifier.createSubmissionHash(submission);
+
+            // Add to user data
+            const quest = QUESTS.find(q => q.id == parseInt(questId));
+            userData.submissions.push(submission);
+            userData.lastSubmissionTime = new Date().toISOString();
+            userData.questsCompleted++;
+            userData.activities.push({
+                type: 'submission',
+                quest: quest.title,
+                timestamp: new Date().toISOString(),
+                icon: quest.icon,
+                credits: 0 // Will be awarded after verification
+            });
+            saveUserData();
+
+            // Show success message
+            const statusDiv = document.getElementById('submissionStatus');
+            statusDiv.classList.add('border-emerald-500', 'bg-emerald-500/10');
+            statusDiv.innerHTML = `
+                <div>
+                    <p class="text-emerald-300 font-bold mb-3">✓ Submission Received!</p>
+                    <p class="text-emerald-200 text-sm mb-4">Your proof has been submitted for peer review. You'll receive rewards within 24-48 hours if verified.</p>
+                    <div class="text-xs text-emerald-300 font-mono bg-black/30 p-3 rounded-lg mt-3">
+                        <p><strong>ID:</strong> ${submission.id}</p>
+                        <p><strong>Hash:</strong> ${submission.hash.substring(0, 32)}...</p>
+                    </div>
+                </div>
+            `;
+            statusDiv.classList.remove('hidden');
+
+            // Reset form
+            resetSubmissionForm();
+            updateAnalytics();
+        }
+
+        function resetSubmissionForm() {
+            document.getElementById('proofFile').value = '';
+            document.getElementById('proofDescription').value = '';
+            document.getElementById('questSelect').value = '';
+            document.getElementById('fileInfo').classList.add('hidden');
+            document.getElementById('questDetails').classList.add('hidden');
+            currentSubmissionFile = null;
+            currentLocation = null;
+        }
+
+        // ============================================
+        // TAB NAVIGATION & EVENT HANDLERS
+        // ============================================
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Deactivate all buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('tab-active', 'text-green-700', 'border-b-4', 'border-green-700');
+                btn.classList.add('text-gray-300', 'hover:text-emerald-300');
+            });
+
+            // Show selected tab
+            const tabElement = document.getElementById(tabName);
+            if (tabElement) {
+                tabElement.classList.add('active');
+            }
+
+            // Activate selected button
+            const btnElement = document.querySelector(`[data-tab="${tabName}"]`);
+            if (btnElement) {
+                btnElement.classList.add('tab-active');
+                btnElement.classList.remove('text-gray-300', 'hover:text-emerald-300');
+            }
+
+            // Trigger specific rendering for each tab
+            if (tabName === 'analytics') {
+                setTimeout(updateAnalytics, 100);
+            } else if (tabName === 'leaderboard') {
+                setTimeout(() => updateLeaderboard('weighted'), 100);
+            } else if (tabName === 'feed') {
+                setTimeout(() => renderFeed(), 100);
+            } else if (tabName === 'family') {
+                setTimeout(() => renderFamilyMembers(), 100);
+            }
+        }
+
+        function openModal() {
+            document.getElementById('profileModal').classList.add('active');
+            updateProfileModal();
+        }
+
+        function closeModal() {
+            document.getElementById('profileModal').classList.remove('active');
+        }
+
+        function updateProfileModal() {
+            document.getElementById('profileCredits').textContent = userData.credits.toLocaleString();
+            document.getElementById('profileTrust').textContent = userData.trustScore + '%';
+            document.getElementById('profileQuests').textContent = userData.questsCompleted;
+            document.getElementById('profileVerifRate').textContent = Math.round(userData.verificationRate * 100) + '%';
+        }
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+
+            if (diffMins < 1) return 'just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`;
+            if (diffMins < 10080) return `${Math.floor(diffMins / 1440)}d ago`;
+            
+            return date.toLocaleDateString();
+        }
+
+        function renderAll() {
+            renderDashboard();
+            renderFeed();
+            renderFamilyMembers();
+            renderQuests();
+            initPhoneTracker();
+            updateAnalytics();
+            updateLeaderboard();
+        }
+
+        // ============================================
+        // EVENT LISTENERS & INITIALIZATION
+        // ============================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tab button listeners
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    switchTab(btn.dataset.tab);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            });
+
+            // Profile button
+            const profileBtn = document.getElementById('profileBtn');
+            if (profileBtn) {
+                profileBtn.addEventListener('click', openModal);
+            }
+
+            // Close modal on backdrop click
+            document.getElementById('profileModal').addEventListener('click', (e) => {
+                if (e.target.id === 'profileModal') {
+                    closeModal();
+                }
+            });
+
+            // Phone tracker logging
+            const logPhoneBtn = document.getElementById('logPhoneBtn');
+            if (logPhoneBtn) {
+                logPhoneBtn.addEventListener('click', logPhoneSession);
+            }
+
+            // Quest selection handler
+            const questSelect = document.getElementById('questSelect');
+            if (questSelect) {
+                questSelect.addEventListener('change', updateQuestDetails);
+            }
+
+            // Location toggle
+            const includeLocation = document.getElementById('includeLocation');
+            if (includeLocation) {
+                includeLocation.addEventListener('change', toggleLocation);
+            }
+
+            // Initialize app
+            initializeUserData();
+        });
+
+        // Update UI periodically
+        setInterval(() => {
+            if (document.getElementById('dashboard').classList.contains('active')) {
+                renderDashboard();
+            }
+        }, 30000); // Update every 30 seconds
+
+    </script>
+</body>
+</html>
